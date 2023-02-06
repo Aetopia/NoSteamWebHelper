@@ -1,5 +1,5 @@
 # NoSteamWebHelper
- A program that disables Steam's CEF/Chromium Embedded Framework by suspending the threads that invoke it.
+ A program that disables Steam's CEF/Chromium Embedded Framework by suspending the threads that invoke it at game runtime.
 
 
 ## Aim

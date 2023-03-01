@@ -20,9 +20,9 @@ This program was created with the intent of replacing of Steam's command-line pa
 2. Place `NoSteamWebHelper.exe` in your Steam installation directory where `steam.exe` is located.
 
 3. Make sure Steam is fully closed and run `NoSteamWebHelper.exe` to launch Steam without any WebHelper processes.
-    > If you need to restore the WebHelper simply go to `%STEAMPATH%\bin\cef\cef.win7x64` or `%STEAMPATH%\bin\cef\cef.win7` and rename `steamwebhelper.exe.disabled` to `steamwebhelper.exe`.
-    > **OR**
-    > Run `NoSteamWebHelper.exe` while Steam is running, exit Steam and then finally launch Steam normally.
+    > If you need to restore the WebHelper simply go to `%STEAMPATH%\bin\cef\cef.win7x64` or `%STEAMPATH%\bin\cef\cef.win7` and rename `steamwebhelper.exe.disabled` to `steamwebhelper.exe`.   
+    > **OR**     
+    > Run `NoSteamWebHelper.exe` while Steam is running, exit Steam and then finally launch Steam normally.      
 
 4. Enable Steam's Small Mode to view your Steam Library.
 

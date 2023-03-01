@@ -24,6 +24,8 @@ This program was created with the intent of replacing of Steam's command-line pa
 
 4. Enable Steam's Small Mode to view your Steam Library.
 
+5. You may also pass command line arguments to `NoSteamWebHelper.exe` which will launch Steam with those command line arguments.
+
 **NOTE: Steam's might break if you disable the WebHelper.**
 
 # Build

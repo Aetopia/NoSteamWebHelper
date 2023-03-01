@@ -60,7 +60,7 @@ int main()
         wcscpy(wCmdLine, wArgvStr + nWAppName + 2);
         seiw.lpParameters = wCmdLine;
     }
-
+MoveFileW(L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled", L"bin\\cef\\cef.win7\\steamwebhelper.exe");
     MoveFileW(L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled", L"bin\\cef\\cef.win7x64\\steamwebhelper.exe");
 
     ShellExecuteExW(&seiw);
@@ -72,6 +72,7 @@ int main()
         DispatchMessageW(&msg);
     };
 
+    MoveFileW(L"bin\\cef\\cef.win7\\steamwebhelper.exe", L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled");
     MoveFileW(L"bin\\cef\\cef.win7x64\\steamwebhelper.exe", L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled");
 
     if (!WTSEnumerateProcessesW(WTS_CURRENT_SERVER, 0, 1, &pWPI, &count))

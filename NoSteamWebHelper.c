@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <wtsapi32.h>
+#include <shlwapi.h>
 
 void WinEventProc(
     HWINEVENTHOOK hWinEventHook,
@@ -27,6 +28,11 @@ DWORD WaitForProcessThread(LPVOID lParam)
 
 int main()
 {
+    const WCHAR *cef7Disabled = L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled",
+                *cef7x64Disabled = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled",
+                *cef7 = L"bin\\cef\\cef.win7\\steamwebhelper.exe",
+                *cef7x64 = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe";
+
     MSG msg;
     WTS_PROCESS_INFOW *pWPI;
     DWORD count;
@@ -60,8 +66,13 @@ int main()
         wcscpy(wCmdLine, wArgvStr + nWAppName + 2);
         seiw.lpParameters = wCmdLine;
     }
-MoveFileW(L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled", L"bin\\cef\\cef.win7\\steamwebhelper.exe");
-    MoveFileW(L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled", L"bin\\cef\\cef.win7x64\\steamwebhelper.exe");
+
+    if (PathFileExistsW(cef7Disabled) && PathFileExistsW(cef7))
+        DeleteFileW(cef7Disabled);
+    if (PathFileExistsW(cef7x64Disabled) && PathFileExistsW(cef7x64))
+        DeleteFileW(cef7x64Disabled);
+    MoveFileW(cef7Disabled, cef7);
+    MoveFileW(cef7x64Disabled, cef7x64);
 
     ShellExecuteExW(&seiw);
     SetWinEventHook(EVENT_OBJECT_SHOW, EVENT_OBJECT_HIDE, 0, WinEventProc, GetProcessId(seiw.hProcess), 0, WINEVENT_OUTOFCONTEXT);
@@ -72,8 +83,8 @@ MoveFileW(L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled", L"bin\\cef\\cef.wi
         DispatchMessageW(&msg);
     };
 
-    MoveFileW(L"bin\\cef\\cef.win7\\steamwebhelper.exe", L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled");
-    MoveFileW(L"bin\\cef\\cef.win7x64\\steamwebhelper.exe", L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled");
+    MoveFileW(cef7, cef7Disabled);
+    MoveFileW(cef7x64, cef7x64Disabled);
 
     if (!WTSEnumerateProcessesW(WTS_CURRENT_SERVER, 0, 1, &pWPI, &count))
         return 1;

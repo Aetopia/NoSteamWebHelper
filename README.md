@@ -15,7 +15,7 @@ This program was created with the intent of replacing of Steam's command-line pa
 4. Kill any WebHelper processes.
 
 # Usage
-1. Download the latest release from [GitHub Releases.](https://github.com/Aetopia/NoSteamWebHelper/releases).
+1. Download the latest release from [GitHub Releases](https://github.com/Aetopia/NoSteamWebHelper/releases).
 
 2. Place `NoSteamWebHelper.exe` in your Steam installation directory where `steam.exe` is located.
 

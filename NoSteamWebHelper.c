@@ -28,10 +28,14 @@ DWORD WaitForProcessThread(LPVOID lParam)
 
 int main()
 {
-    const WCHAR *cef7Disabled = L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled",
+    const WCHAR *cef7 = L"bin\\cef\\cef.win7\\steamwebhelper.exe",
+                *cef7x64 = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe",
+                *cef7Disabled = L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled",
                 *cef7x64Disabled = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled",
-                *cef7 = L"bin\\cef\\cef.win7\\steamwebhelper.exe",
-                *cef7x64 = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe";
+                *errorReporter = L"steamerrorreporter.exe",
+                *errorReporterx64 = L"steamerrorreporter64.exe",
+                *errorReporterDisabled = L"steamerrorreporter.exe.disabled",
+                *errorReporterx64Disabled = L"steamerrorreporter64.exe.disabled";
 
     MSG msg;
     WTS_PROCESS_INFOW *pWPI;
@@ -67,10 +71,17 @@ int main()
         seiw.lpParameters = wCmdLine;
     }
 
-    if (PathFileExistsW(cef7Disabled) && PathFileExistsW(cef7))
+    if (PathFileExistsW(cef7) && PathFileExistsW(cef7Disabled))
         DeleteFileW(cef7Disabled);
-    if (PathFileExistsW(cef7x64Disabled) && PathFileExistsW(cef7x64))
+    if (PathFileExistsW(cef7x64) && PathFileExistsW(cef7x64Disabled))
         DeleteFileW(cef7x64Disabled);
+    if (PathFileExistsW(errorReporter) && PathFileExistsW(errorReporterDisabled))
+        DeleteFileW(errorReporterDisabled);
+    if (PathFileExistsW(errorReporterx64) && PathFileExistsW(errorReporterx64Disabled))
+        DeleteFileW(errorReporterx64Disabled);
+
+    MoveFileW(errorReporterDisabled, errorReporter);
+    MoveFileW(errorReporterx64Disabled, errorReporterx64);
     MoveFileW(cef7Disabled, cef7);
     MoveFileW(cef7x64Disabled, cef7x64);
 
@@ -83,6 +94,8 @@ int main()
         DispatchMessageW(&msg);
     };
 
+    MoveFileW(errorReporter, errorReporterDisabled);
+    MoveFileW(errorReporterx64, errorReporterx64Disabled);
     MoveFileW(cef7, cef7Disabled);
     MoveFileW(cef7x64, cef7x64Disabled);
 

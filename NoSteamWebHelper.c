@@ -105,7 +105,9 @@ int main()
     for (DWORD i = 0; i < count; i++)
     {
         wcslwr(pWPI[i].pProcessName);
-        if (wcscmp(pWPI[i].pProcessName, L"steamwebhelper.exe"))
+        if (wcscmp(pWPI[i].pProcessName, L"steamwebhelper.exe") ||
+            wcscmp(pWPI[i].pProcessName, errorReporter) ||
+            wcscmp(pWPI[i].pProcessName, errorReporterx64))
             continue;
         hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pWPI[i].ProcessId);
         TerminateProcess(hProcess, 0);

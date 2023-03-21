@@ -31,7 +31,7 @@ This program was created with the intent of replacing of Steam's command-line pa
 # Notes
 1. **Steam's UI or features might break if you disable the WebHelper.**
 2. **There is a slight CPU utilization penalty which can be circumvented by suspending the problematic thread.**
-    - **[More Details.](https://gist.github.com/amitxv/0c454ba09a2feb3dd38f29c333f68c04?permalink_comment_id=4460606#gistcomment-4460606)**
+    - **[More Details Here.](https://gist.github.com/amitxv/0c454ba09a2feb3dd38f29c333f68c04?permalink_comment_id=4460606#gistcomment-4460606)**
 
 # Build
 1. Install `GCC` and [`UPX`](https://upx.github.io/) for optional compression.

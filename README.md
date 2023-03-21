@@ -28,7 +28,7 @@ This program was created with the intent of replacing of Steam's command-line pa
 
 5. You may also pass command line arguments to `NoSteamWebHelper.exe` which will launch Steam with those command line arguments.
 
-### Warnings 
+# Notes
 1. **Steam's UI or features might break if you disable the WebHelper.**
 2. **[There is a slight CPU utilization penalty which can be circumvented by suspending the problematic thread.](https://gist.github.com/amitxv/0c454ba09a2feb3dd38f29c333f68c04?permalink_comment_id=4460606#gistcomment-4460606)**
 

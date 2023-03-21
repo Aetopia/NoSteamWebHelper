@@ -5,14 +5,14 @@
 ## Aim
 This program was created with the intent of replacing of Steam's command-line parameter `-no-browser` which was [recently removed.](https://steamcommunity.com/groups/SteamClientBeta/discussions/3/3710433479207750727/?ctp=42)
 
-## Logic
-**How does NoSteamWebHelper kill or disable CEF/Chromium Embedded Framework?**     
+
+## How does NoSteamWebHelper kill or disable CEF/Chromium Embedded Framework? 
 
 1. Launch Steam through `NoSteamWebHelper.exe`.
-2. Create a dummy DLL called `wininet.dll` that the Steam Webhelper loads.
 2. Wait for Steam's window to be hidden or shown, this indicates Steam has fully initialized.
-3. Rename `steamwebhelper.exe`.
+3. Create a dummy DLL called `wininet.dll` that the Steam Webhelper loads.
 4. Kill any WebHelper processes.
+5. Any new WebHelper processes launched by Steam will simply not launch since it is using the newly created dummy DLL (`wininet.dll`).
 
 # Usage
 1. Download the latest release from [GitHub Releases](https://github.com/Aetopia/NoSteamWebHelper/releases).

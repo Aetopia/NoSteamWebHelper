@@ -100,7 +100,7 @@ int main()
         hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pWPI[i].ProcessId);
         TerminateProcess(hProcess, 0);
         CloseHandle(hProcess);
-    }
+    };
 
     CloseHandle(seiw.hProcess);
     return 0;

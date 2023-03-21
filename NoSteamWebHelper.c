@@ -16,6 +16,7 @@ void WinEventProc(
         idObject != OBJID_WINDOW &&
         idChild != CHILDID_SELF)
         return;
+    UnhookWinEvent(hWinEventHook);
     PostQuitMessage(0);
 }
 
@@ -28,14 +29,10 @@ DWORD WaitForProcessThread(LPVOID lParam)
 
 int main()
 {
-    const WCHAR *cef7 = L"bin\\cef\\cef.win7\\steamwebhelper.exe",
-                *cef7x64 = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe",
-                *cef7Disabled = L"bin\\cef\\cef.win7\\steamwebhelper.exe.disabled",
-                *cef7x64Disabled = L"bin\\cef\\cef.win7x64\\steamwebhelper.exe.disabled",
-                *errorReporter = L"steamerrorreporter.exe",
-                *errorReporterx64 = L"steamerrorreporter64.exe",
-                *errorReporterDisabled = L"steamerrorreporter.exe.disabled",
-                *errorReporterx64Disabled = L"steamerrorreporter64.exe.disabled";
+    const WCHAR *dummyDll = L"bin\\cef\\cef.win7\\wininet.dll",
+                *dummyDllx64 = L"bin\\cef\\cef.win7x64\\wininet.dll",
+                *dummyDllDisabled = L"bin\\cef\\cef.win7\\wininet.dll.disabled",
+                *dummyDllx64Disabled = L"bin\\cef\\cef.win7x64\\wininet.dll.disabled";
 
     MSG msg;
     WTS_PROCESS_INFOW *pWPI;
@@ -61,7 +58,7 @@ int main()
         wAppDir[i] = 0;
         SetCurrentDirectoryW(wAppDir);
         break;
-    }
+    };
 
     if (argc != 1)
     {
@@ -69,21 +66,14 @@ int main()
         wCmdLine = alloca(sizeof(WCHAR *) * nCmdLine);
         wcscpy(wCmdLine, wArgvStr + nWAppName + 2);
         seiw.lpParameters = wCmdLine;
-    }
+    };
 
-    if (PathFileExistsW(cef7) && PathFileExistsW(cef7Disabled))
-        DeleteFileW(cef7Disabled);
-    if (PathFileExistsW(cef7x64) && PathFileExistsW(cef7x64Disabled))
-        DeleteFileW(cef7x64Disabled);
-    if (PathFileExistsW(errorReporter) && PathFileExistsW(errorReporterDisabled))
-        DeleteFileW(errorReporterDisabled);
-    if (PathFileExistsW(errorReporterx64) && PathFileExistsW(errorReporterx64Disabled))
-        DeleteFileW(errorReporterx64Disabled);
-
-    MoveFileW(errorReporterDisabled, errorReporter);
-    MoveFileW(errorReporterx64Disabled, errorReporterx64);
-    MoveFileW(cef7Disabled, cef7);
-    MoveFileW(cef7x64Disabled, cef7x64);
+    if (PathFileExistsW(dummyDll) &&
+        !MoveFileW(dummyDll, dummyDllDisabled))
+        DeleteFileW(dummyDll);
+    if (PathFileExistsW(dummyDllx64) &&
+        !MoveFileW(dummyDllx64, dummyDllx64Disabled))
+        DeleteFileW(dummyDllx64);
 
     ShellExecuteExW(&seiw);
     SetWinEventHook(EVENT_OBJECT_SHOW, EVENT_OBJECT_HIDE, 0, WinEventProc, GetProcessId(seiw.hProcess), 0, WINEVENT_OUTOFCONTEXT);
@@ -94,10 +84,10 @@ int main()
         DispatchMessageW(&msg);
     };
 
-    MoveFileW(errorReporter, errorReporterDisabled);
-    MoveFileW(errorReporterx64, errorReporterx64Disabled);
-    MoveFileW(cef7, cef7Disabled);
-    MoveFileW(cef7x64, cef7x64Disabled);
+    if (!MoveFileW(dummyDllDisabled, dummyDll))
+        CloseHandle(CreateFileW(dummyDll, 0, 0, 0, CREATE_ALWAYS, 0, 0));
+    if (!MoveFileW(dummyDllx64Disabled, dummyDllx64))
+        CloseHandle(CreateFileW(dummyDllx64, 0, 0, 0, CREATE_ALWAYS, 0, 0));
 
     if (!WTSEnumerateProcessesW(WTS_CURRENT_SERVER, 0, 1, &pWPI, &count))
         return 1;

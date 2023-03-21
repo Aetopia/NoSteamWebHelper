@@ -9,7 +9,7 @@ This program was created with the intent of replacing of Steam's command-line pa
 **How does NoSteamWebHelper kill or disable CEF/Chromium Embedded Framework?**     
 
 1. Launch Steam through `NoSteamWebHelper.exe`.
-2. Revert the filename of `steamwebhelper.exe` back to default.
+2. Create a dummy DLL called `wininet.dll` that the Steam Webhelper loads.
 2. Wait for Steam's window to be hidden or shown, this indicates Steam has fully initialized.
 3. Rename `steamwebhelper.exe`.
 4. Kill any WebHelper processes.
@@ -20,9 +20,9 @@ This program was created with the intent of replacing of Steam's command-line pa
 2. Place `NoSteamWebHelper.exe` in your Steam installation directory where `steam.exe` is located.
 
 3. Make sure Steam is fully closed and run `NoSteamWebHelper.exe` to launch Steam without any WebHelper processes.
-    > If you need to restore the WebHelper simply go to `%STEAMPATH%\bin\cef\cef.win7x64` or `%STEAMPATH%\bin\cef\cef.win7` and rename `steamwebhelper.exe.disabled` to `steamwebhelper.exe`.   
+    > If you need to restore the WebHelper simply go to `%STEAMPATH%\bin\cef\cef.win7x64` or `%STEAMPATH%\bin\cef\cef.win7` and delete `wininet.dll`/`wininet.dll.disabled`.  
     > **OR**     
-    > Run `NoSteamWebHelper.exe` while Steam is running, exit Steam and then finally launch Steam normally.      
+    > Run `NoSteamWebHelper.exe` while Steam is running to restore the WebHelper.  
 
 4. Enable Steam's Small Mode to view your Steam Library.
 

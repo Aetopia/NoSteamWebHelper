@@ -10,7 +10,7 @@ This program was created with the intent of replacing of Steam's command-line pa
 
 1. Launch Steam through `NoSteamWebHelper.exe`.
 2. Wait for Steam's window to be hidden, this indicates Steam has fully initialized.
-3. Suspend the single WebHelper process, this is acheived by passing `-cef-single-process -cef-disable-breakpad` to the steam executable.
+3. Suspend the single WebHelper process, this is acheived by passing `-cef-single-process -cef-disable-breakpad` to the Steam's executable.
 4. Empty the WebHelper's working set, this will cause the memory usage of the process to go down to 0 MB.
 
 # Usage

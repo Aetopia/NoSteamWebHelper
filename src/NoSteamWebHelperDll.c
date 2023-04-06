@@ -45,7 +45,6 @@ DWORD MainThread()
     fnNtSuspendProcess NtSuspendProcess = (fnNtSuspendProcess)GetProcAddress(hLibModule, "NtSuspendProcess");
     FreeLibrary(hLibModule);
     SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
-    // AssignProcessToJobObject(hJob, GetCurrentProcess());
     SetWinEventHook(EVENT_OBJECT_HIDE, EVENT_OBJECT_HIDE, 0, (WINEVENTPROC)WinEventProc, GetCurrentProcessId(), 0, WINEVENT_OUTOFCONTEXT);
 
     while (GetMessageW(&msg, 0, 0, 0))

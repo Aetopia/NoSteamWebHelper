@@ -24,11 +24,14 @@ void WinEventProc(
     DWORD idEventThread,
     DWORD dwmsEventTime)
 {
-    if (event != EVENT_OBJECT_HIDE &&
+    if ((event != EVENT_OBJECT_HIDE ||
+         event != EVENT_OBJECT_SHOW) &&
         idObject != OBJID_WINDOW &&
         idChild != CHILDID_SELF)
         return;
     UnhookWinEvent(hWinEventHook);
+    if (event == EVENT_OBJECT_SHOW)
+        TerminateProcess(GetCurrentProcess(), 0);
     SteamWndProc = (WNDPROC)GetWindowLongPtrW(hWnd, GWL_WNDPROC);
     SetWindowLongPtrW(hWnd, GWL_WNDPROC, (LONG_PTR)NoBrowserWndProc);
     PostQuitMessage(0);
@@ -45,7 +48,7 @@ DWORD MainThread()
     fnNtSuspendProcess NtSuspendProcess = (fnNtSuspendProcess)GetProcAddress(hLibModule, "NtSuspendProcess");
     FreeLibrary(hLibModule);
     SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
-    SetWinEventHook(EVENT_OBJECT_HIDE, EVENT_OBJECT_HIDE, 0, (WINEVENTPROC)WinEventProc, GetCurrentProcessId(), 0, WINEVENT_OUTOFCONTEXT);
+    SetWinEventHook(EVENT_OBJECT_SHOW, EVENT_OBJECT_HIDE, 0, (WINEVENTPROC)WinEventProc, GetCurrentProcessId(), 0, WINEVENT_OUTOFCONTEXT);
 
     while (GetMessageW(&msg, 0, 0, 0))
     {

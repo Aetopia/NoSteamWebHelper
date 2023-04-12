@@ -1,12 +1,13 @@
 #include <windows.h>
+#include <wininet.h>
 
 int main(int argc, char *aArgv)
 {
     MSG msg;
     int nWAppName, nCmdLine;
-    BOOL cefSingleProcess = FALSE,
-         cefDisableBreakpad = FALSE;
-    WCHAR *wSteamArgs = L"-silent -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl \0",
+    PROCESS_INFORMATION pi;
+    STARTUPINFOW si = {.cb = sizeof(STARTUPINFOW)};
+    WCHAR *wSteamArgs = L"steam.exe -silent -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl \0",
           *wAppDir,
           *wCmdLine = 0,
           *wArgvStr = GetCommandLineW(),
@@ -36,10 +37,14 @@ int main(int argc, char *aArgv)
     wcscat(wCmdLine, wArgvStr + nWAppName + 2);
     seiw.lpParameters = wCmdLine;
 
-    ShellExecuteExW(&seiw);
-    memory = VirtualAllocEx(seiw.hProcess, NULL, sizeof(WCHAR) * 22, MEM_COMMIT, PAGE_READWRITE);
-    WriteProcessMemory(seiw.hProcess, memory, dllName, sizeof(WCHAR) * 22, NULL);
-    CreateRemoteThread(seiw.hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, memory, 0, 0);
-    CloseHandle(seiw.hProcess);
+    while (!InternetGetConnectedState(0, 0))
+        Sleep(1);
+    CreateProcessW(0, wCmdLine, 0, 0, 0, CREATE_SUSPENDED, 0, 0, &si, &pi);
+    memory = VirtualAllocEx(pi.hProcess, NULL, sizeof(WCHAR) * 22, MEM_COMMIT, PAGE_READWRITE);
+    WriteProcessMemory(pi.hProcess, memory, dllName, sizeof(WCHAR) * 22, NULL);
+    WaitForSingleObject(CreateRemoteThread(pi.hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, memory, 0, 0),INFINITE);
+    ResumeThread(pi.hThread);
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
     return 0;
 }

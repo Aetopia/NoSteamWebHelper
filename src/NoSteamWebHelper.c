@@ -6,11 +6,12 @@ int main(int argc, char *aArgv)
     int nWAppName, nCmdLine;
     BOOL cefSingleProcess = FALSE,
          cefDisableBreakpad = FALSE;
-    WCHAR *wAppDir,
-        *wCmdLine = 0,
-        *wArgvStr = GetCommandLineW(),
-        **wArgv = CommandLineToArgvW(wArgvStr, &argc),
-        *dllName = L"NoSteamWebHelper.dll";
+    WCHAR *wSteamArgs = L"-silent -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl \0",
+          *wAppDir,
+          *wCmdLine = 0,
+          *wArgvStr = GetCommandLineW(),
+          **wArgv = CommandLineToArgvW(wArgvStr, &argc),
+          *dllName = L"NoSteamWebHelper.dll";
     SHELLEXECUTEINFOW seiw = {.cbSize = sizeof(SHELLEXECUTEINFOW),
                               .lpFile = L"steam.exe",
                               .fMask = SEE_MASK_NOCLOSEPROCESS,
@@ -30,8 +31,8 @@ int main(int argc, char *aArgv)
     };
 
     nCmdLine = (wcslen(wArgvStr) - (nWAppName + 2));
-    wCmdLine = alloca(sizeof(WCHAR) * (nCmdLine + 51));
-    wcscpy(wCmdLine, L"-silent -cef-single-process -cef-disable-breakpad \0");
+    wCmdLine = alloca(sizeof(WCHAR) * (nCmdLine + wcslen(wSteamArgs) + 1));
+    wcscpy(wCmdLine, wSteamArgs);
     wcscat(wCmdLine, wArgvStr + nWAppName + 2);
     seiw.lpParameters = wCmdLine;
 

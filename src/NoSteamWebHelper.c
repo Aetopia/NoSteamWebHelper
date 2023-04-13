@@ -1,12 +1,7 @@
 #include <windows.h>
-#include <wininet.h>
-#define printf __builtin_printf
 
 int main(int argc, char *aArgv)
 {
-    while (!InternetGetConnectedState(0, 0))
-        Sleep(1);
-
     MSG msg;
     LPVOID memory;
     int nWAppName, nCmdLine;

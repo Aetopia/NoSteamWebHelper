@@ -1,8 +1,14 @@
 #include <windows.h>
+#include <wininet.h>
+#define printf __builtin_printf
 
 int main(int argc, char *aArgv)
 {
+    while (!InternetGetConnectedState(0, 0))
+        Sleep(1);
+
     MSG msg;
+    LPVOID memory;
     int nWAppName, nCmdLine;
     WCHAR *wSteamArgs = L"steam.exe -silent -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl \0",
           *wAppDir,
@@ -14,7 +20,6 @@ int main(int argc, char *aArgv)
                               .lpFile = L"steam.exe",
                               .fMask = SEE_MASK_NOCLOSEPROCESS,
                               .nShow = SW_NORMAL};
-    LPVOID memory;
 
     nWAppName = wcslen(wArgv[0]) + 1;
     wAppDir = alloca(sizeof(WCHAR) * nWAppName);

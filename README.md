@@ -27,9 +27,6 @@ This program was created with the intent of replacing of Steam's command-line pa
 
 # Notes
 1. **Steam's UI or features might break if you disable the WebHelper.**
-2. **A network connection is required for NoSteamWebHelper to work, this ensures Steam doesn't relaunch itself and spawn multiple WebHelper processes.**
-3. **The Steam Client will not be able to update if you use NoSteamWebHelper, this to ensure the WebHelper doesn't load any UI handled by CEF.**
-4. **The Steam Client is launched silently or hidden to ensure the WebHelper doesn't load any UI handled by CEF.**
 2. > **Fixed with NoSteamWebHelper 2.0!**
 
     **There is a slight CPU utilization penalty which can be circumvented by suspending the problematic thread.**

@@ -42,7 +42,7 @@ int main(int argc, char *aArgv)
     CreateProcessW(0, wCmdLine, 0, 0, 0, CREATE_SUSPENDED, 0, 0, &si, &pi);
     memory = VirtualAllocEx(pi.hProcess, NULL, sizeof(WCHAR) * 22, MEM_COMMIT, PAGE_READWRITE);
     WriteProcessMemory(pi.hProcess, memory, dllName, sizeof(WCHAR) * 22, NULL);
-    WaitForSingleObject(CreateRemoteThread(pi.hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, memory, 0, 0),INFINITE);
+    CreateRemoteThread(pi.hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, memory, 0, 0);
     ResumeThread(pi.hThread);
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);

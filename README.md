@@ -1,3 +1,6 @@
+> **Warning**  
+> NoSteamWebHelper will no longer with Steam starting with the client update dropped on 14th June 2023.
+> 
 # NoSteamWebHelper
  A program that disables Steam's CEF/Chromium Embedded Framework.
 

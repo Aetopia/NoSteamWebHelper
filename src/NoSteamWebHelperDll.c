@@ -67,9 +67,9 @@ DWORD MainThread()
         NtSuspendProcess(hProcess);
         AssignProcessToJobObject(hJob, hProcess);
         SetProcessWorkingSetSize(hProcess, -1, -1);
-        WTSFreeMemory(pWPI);
         break;
     };
+    WTSFreeMemory(pWPI);
     return TRUE;
 }
 

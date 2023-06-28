@@ -5,7 +5,7 @@ int main(int argc, char *aArgv)
     MSG msg;
     LPVOID memory;
     int nWAppName, nCmdLine;
-    WCHAR *wSteamArgs = L"steam.exe -vgui -silent -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl \0",
+    WCHAR *wSteamArgs = L"steam.exe -oldtraymenu -vgui -silent -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -no-cef-sandbox -vrdisable -cef-disable-breakpad -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl \0",
           *wAppDir,
           *wCmdLine = 0,
           *wArgvStr = GetCommandLineW(),

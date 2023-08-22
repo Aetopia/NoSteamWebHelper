@@ -2,6 +2,6 @@
 set compiler=%1
 if "%1"=="" set compiler=gcc.exe
 cd "%~dp0"
-"%compiler%" -s -mwindows src/NoSteamWebHelper.c -lwtsapi32 -o NoSteamWebHelper.exe
-"%compiler%" -s -shared src/NoSteamWebHelperDll.c -lwtsapi32 -o NoSteamWebHelper.dll
+"%compiler%" -O3 -municode -s -mwindows src/WinMain.c -o NoSteamWebHelper.exe
+"%compiler%" -O3 -municode -s -shared src/DllMain.c -o NoSteamWebHelper.dll
 upx --best --ultra-brute NoSteamWebHelper.exe NoSteamWebHelper.dll>nul 2>&1

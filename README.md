@@ -1,6 +1,3 @@
-> **Warning**
-> NoSteamWebHelper is once again not working with the client update that dropped on 2th August 2023.
-
 # NoSteamWebHelper
  A program that disables Steam's CEF/Chromium Embedded Framework.
 
@@ -10,30 +7,18 @@ This program was created with the intent of replacing of Steam's command-line pa
 
 ## How does NoSteamWebHelper kill or disable CEF/Chromium Embedded Framework? 
 
-1. Launch Steam through `NoSteamWebHelper.exe` with the `-vgui -oldtraymenu` to make Steam use the legacy VGUI.
-2. Wait for Steam's window to be hidden, this indicates Steam has fully initialized.
-3. Suspend the single WebHelper process, this is acheived by passing `-cef-single-process -cef-disable-breakpad` to the Steam's executable.
-4. Empty the WebHelper's working set, this will cause the memory usage of the process to go down to 0 MB.
+1. Launch Steam through `NoSteamWebHelper.exe`.
+2. Monitor the following registry key: `HKEY_CURRENT_USER\SOFTWARE\Valve\Steam\Apps` and all of its subkeys.
+3. When an app runs, suspend the window thread and kill any WebHelper processes.
 
 # Usage
 1. Download the latest release from [GitHub Releases](https://github.com/Aetopia/NoSteamWebHelper/releases).
 
 2. Unzip `NoSteamWebHelper.zip`, place `NoSteamWebHelper.exe` & `NoSteamWebHelper.dll` in your Steam installation directory where `steam.exe` is located.
 
-3. Make sure Steam is fully closed and run `NoSteamWebHelper.exe` to launch Steam without any WebHelper processes.
-    > If you need to restore the WebHelper simply kill the suspended WebHelper process.
+3. Make sure Steam is fully closed and run `NoSteamWebHelper.exe` to launch Steam.
 
-4. Enable Steam's Small Mode to view your Steam Library.
-
-5. You may also pass command line arguments to `NoSteamWebHelper.exe` which will launch Steam with those command line arguments.
-
-# Notes
-1. **Steam's UI or features might break if you disable the WebHelper.**
-2. > **Fixed with NoSteamWebHelper 2.0!**
-
-    **There is a slight CPU utilization penalty which can be circumvented by suspending the problematic thread.**
-    - **[More Details Here.](https://gist.github.com/amitxv/0c454ba09a2feb3dd38f29c333f68c04?permalink_comment_id=4460606#gistcomment-4460606)**
-
+4. The WebHelper processes will be terminated when an app runs but means you won't be able to access Steam's UI unless you exit the game.
 
 # Build
 1. Ensure you have a 32 Bit `GCC` installation and [`UPX`](https://upx.github.io/) for optional compression.

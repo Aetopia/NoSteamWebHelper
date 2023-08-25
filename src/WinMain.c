@@ -1,15 +1,18 @@
+#define  _WIN32_WINNT _WIN32_WINNT_WIN10
 #include <windows.h>
 
 INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, INT nShowCmd)
 {
   LPVOID lpBaseAddress = NULL;
+  HANDLE hProcess = GetCurrentProcess();
+  WCHAR *lpExeName = NULL;
+  DWORD cbData = 0,
+        dwSize = sizeof(WCHAR) * (wcslen(L"NoSteamWebHelper.dll") + 1);
   SHELLEXECUTEINFOW sei = {.cbSize = sizeof(SHELLEXECUTEINFOW),
                            .lpParameters = lpCmdLine,
                            .lpFile = L"steam.exe",
                            .fMask = SEE_MASK_NOCLOSEPROCESS,
                            .nShow = SW_SHOWNORMAL};
-  DWORD cbData = 0,
-        dwSize = sizeof(WCHAR) * (wcslen(L"NoSteamWebHelper.dll") + 1);
 
   sei.lpParameters = (LPCWSTR)_malloca(sizeof(WCHAR) *
                                        (wcslen(lpCmdLine) +
@@ -17,11 +20,22 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
                                         1));
   (VOID) wcscpy((LPWSTR)sei.lpParameters, lpCmdLine);
   (VOID) wcscat((LPWSTR)sei.lpParameters, L" -oldtraymenu -cef-single-process -cef-disable-breakpad");
+  dwSize = 0;
 
-  (VOID) RegGetValueW(HKEY_CURRENT_USER, L"SOFTWARE\\Valve\\Steam", L"SteamPath", RRF_RT_REG_SZ, NULL, NULL, &cbData);
-  sei.lpDirectory = (LPCWSTR)_malloca(cbData);
-  (VOID) RegGetValueW(HKEY_CURRENT_USER, L"SOFTWARE\\Valve\\Steam", L"SteamPath", RRF_RT_REG_SZ, NULL, (PVOID)sei.lpDirectory, &cbData);
-  (VOID) SetCurrentDirectoryW(sei.lpDirectory);
+  do
+    lpExeName = realloc(lpExeName, sizeof(WCHAR) * (dwSize += 1));
+  while (!QueryFullProcessImageNameW(hProcess, 0, lpExeName, &dwSize));
+  for (DWORD dwIndex = dwSize; dwIndex < -1; dwIndex -= 1)
+  {
+    if (lpExeName[dwIndex] == '\\')
+    {
+      lpExeName[dwIndex] = '\0';
+      (VOID)CloseHandle(hProcess);
+      (VOID) SetCurrentDirectoryW(lpExeName);
+      free(lpExeName);
+      break;
+    }
+  }
 
   (VOID) ShellExecuteExW(&sei);
   lpBaseAddress = VirtualAllocEx(sei.hProcess, NULL, dwSize, MEM_COMMIT, PAGE_READWRITE);

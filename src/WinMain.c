@@ -7,7 +7,7 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
   HANDLE hProcess = GetCurrentProcess();
   WCHAR *lpExeName = NULL;
   DWORD cbData = 0,
-        dwSize = sizeof(WCHAR) * (wcslen(L"NoSteamWebHelper.dll") + 1);
+        dwSize = 0;
   SHELLEXECUTEINFOW sei = {.cbSize = sizeof(SHELLEXECUTEINFOW),
                            .lpParameters = lpCmdLine,
                            .lpFile = L"steam.exe",
@@ -20,7 +20,6 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
                                         1));
   (VOID) wcscpy((LPWSTR)sei.lpParameters, lpCmdLine);
   (VOID) wcscat((LPWSTR)sei.lpParameters, L" -oldtraymenu -cef-single-process -cef-disable-breakpad");
-  dwSize = 0;
 
   do
     lpExeName = realloc(lpExeName, sizeof(WCHAR) * (dwSize += 1));
@@ -38,6 +37,7 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
   }
 
   (VOID) ShellExecuteExW(&sei);
+  dwSize = sizeof(WCHAR) * (wcslen(L"NoSteamWebHelper.dll") + 1);
   lpBaseAddress = VirtualAllocEx(sei.hProcess, NULL, dwSize, MEM_COMMIT, PAGE_READWRITE);
   (VOID) WriteProcessMemory(sei.hProcess, lpBaseAddress, L"NoSteamWebHelper.dll", dwSize, NULL);
   (VOID) CloseHandle(CreateRemoteThread(sei.hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, lpBaseAddress, 0, NULL));

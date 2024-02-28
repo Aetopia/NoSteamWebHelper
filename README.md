@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> As for 28th Feburary 2023, I am officially deprecating this project.<br>
+> I have no interest in this project as well any desire to disable the CEF for Steam.<br>
+> Feel free to fork and edit the source code to your needs.<br>
+> I might do a redux of this project in the future, if I feel like it.
+
 # NoSteamWebHelper
  A program that disables Steam's CEF/Chromium Embedded Framework.
 

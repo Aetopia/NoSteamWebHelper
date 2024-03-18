@@ -1,7 +1,5 @@
 @echo off
-set compiler=%1
-if "%1"=="" set compiler=gcc.exe
 cd "%~dp0"
-"%compiler%" -O3 -municode -s -mwindows src/WinMain.c -o NoSteamWebHelper.exe
-"%compiler%" -O3 -municode -s -shared src/DllMain.c -o NoSteamWebHelper.dll
-upx --best --ultra-brute NoSteamWebHelper.exe NoSteamWebHelper.dll>nul 2>&1
+i686-w64-mingw32-gcc.exe -s -nostdlib -mwindows WinMain.c -lKernel32 -o NoSteamWebHelper.exe
+i686-w64-mingw32-gcc.exe -s -nostdlib -shared DllMain.c -lKernel32 -lUser32 -lAdvapi32 -o NoSteamWebHelper.dll
+upx --best --ultra-brute dpapi.dll>nul 2>&1

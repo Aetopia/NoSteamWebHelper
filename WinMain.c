@@ -28,10 +28,12 @@ int WinMainCRTStartup()
         RegSetValueExW(hKey, L"GPUAccelWebViewsV3", 0, REG_DWORD, (BYTE *)&((DWORD){}), sizeof(DWORD));
         RegCloseKey(hKey);
     }
+
     LPVOID lpBaseAddress = VirtualAllocEx(ProcessInformation.hProcess, NULL, dwSize = 42, MEM_COMMIT, PAGE_READWRITE);
     WriteProcessMemory(ProcessInformation.hProcess, lpBaseAddress, L"NoSteamWebHelper.dll", dwSize, NULL);
     CloseHandle(CreateRemoteThread(ProcessInformation.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW,
                                    lpBaseAddress, 0, NULL));
+                                   
     ResumeThread(ProcessInformation.hThread);
     CloseHandle(ProcessInformation.hThread);
     CloseHandle(ProcessInformation.hProcess);

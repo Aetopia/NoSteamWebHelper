@@ -21,6 +21,7 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
         DWORD dwRunningAppID = 0;
         RegGetValueW(hKey, NULL, L"RunningAppID", RRF_RT_REG_DWORD, NULL, (PVOID)&dwRunningAppID,
                      &((DWORD){sizeof(DWORD)}));
+                     
         (dwRunningAppID ? SuspendThread : ResumeThread)(hThread);
         if (dwRunningAppID)
             EndTask(FindWindowW(L"SDL_app", L"Steam"), FALSE, TRUE);

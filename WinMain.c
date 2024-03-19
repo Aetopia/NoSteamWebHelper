@@ -18,8 +18,10 @@ int WinMainCRTStartup()
 
     PROCESS_INFORMATION ProcessInformation = {};
     if (CreateProcessW(NULL,
-                       lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 122),
-                                L"steam.exe -silent -cef-single-process -cef-disable-breakpad"),
+                       lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+                                                   106 + (sizeof(WCHAR) * lstrlenW(GetCommandLineW()))),
+                                         L"steam.exe -cef-single-process -cef-disable-breakpad "),
+                                GetCommandLineW()),
                        NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &((STARTUPINFOW){}), &ProcessInformation))
     {
         HKEY hKey = NULL;
@@ -33,7 +35,7 @@ int WinMainCRTStartup()
     WriteProcessMemory(ProcessInformation.hProcess, lpBaseAddress, L"NoSteamWebHelper.dll", dwSize, NULL);
     CloseHandle(CreateRemoteThread(ProcessInformation.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW,
                                    lpBaseAddress, 0, NULL));
-                                   
+
     ResumeThread(ProcessInformation.hThread);
     CloseHandle(ProcessInformation.hThread);
     CloseHandle(ProcessInformation.hProcess);

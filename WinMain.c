@@ -1,6 +1,6 @@
 #include <windows.h>
 
-int WinMainCRTStartup()
+int wWinMainCRTStartup()
 {
     DWORD dwSize = MAX_PATH;
     LPWSTR lpExeName = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwSize * sizeof(WCHAR));

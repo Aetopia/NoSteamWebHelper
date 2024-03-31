@@ -1,9 +1,6 @@
 #include <windows.h>
 
-LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild,
-                           DWORD dwEventThread, DWORD dwmsEventTime);
-DWORD ThreadProc(LPVOID lpParameter);
+DWORD ThreadProc(LPVOID);
 
 LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

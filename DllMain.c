@@ -1,8 +1,8 @@
 #include <windows.h>
 
-DWORD ThreadProc(LPVOID);
+DWORD WINAPI ThreadProc(LPVOID);
 
-LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static NOTIFYICONDATAW s_Data = {.cbSize = sizeof(NOTIFYICONDATAW),
                                      .uCallbackMessage = WM_USER,
@@ -50,15 +50,14 @@ LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild,
                            DWORD dwEventThread, DWORD dwmsEventTime)
 {
-    WCHAR szClassName[17] = {}, szString[10] = {};
-    GetClassNameW(hwnd, szClassName, 17);
-    GetWindowTextW(hwnd, szString, 10);
+    WCHAR szClassName[16] = {};
+    GetClassNameW(hwnd, szClassName, 16);
 
     if (CompareStringOrdinal(L"vguiPopupWindow", -1, szClassName, -1, FALSE) != CSTR_EQUAL ||
-        CompareStringOrdinal(L"Untitled", -1, szString, -1, FALSE) != CSTR_EQUAL)
+        GetWindowTextLengthW(hwnd) < 1)
         return;
 
-    CloseHandle(CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProc, (LPVOID)TRUE, 0, NULL));
+    CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)TRUE, 0, NULL));
 
     HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, dwEventThread);
     HKEY hKey = NULL;
@@ -77,7 +76,7 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
     }
 }
 
-DWORD ThreadProc(LPVOID lpParameter)
+DWORD WINAPI ThreadProc(LPVOID lpParameter)
 {
     MSG msg = {};
 
@@ -106,7 +105,7 @@ BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRes
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinstDLL);
-        CloseHandle(CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProc, (LPVOID)FALSE, 0, NULL));
+        CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)FALSE, 0, NULL));
     }
     return TRUE;
 }

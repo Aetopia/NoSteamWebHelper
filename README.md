@@ -30,10 +30,6 @@ This way, the Steam UI is still accessible to use.
 4. Start up an app and the CEF will be toggled accordingly.
 
 # Build
-1. Install [`GCC i686`](https://winlibs.com/) and [`UPX`](https://upx.github.io/) for optional compression.
-2. Run `Build.cmd`.
-
-## Build
 1. Install [MSYS2](https://www.msys2.org/) & [UPX](https://upx.github.io/) for optional compression.
 2. Update the MSYS2 Environment until there are no pending updates using:
 

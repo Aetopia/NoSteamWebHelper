@@ -7,7 +7,7 @@ This program was created with the intent of replacing of Steam's command-line pa
 
 ## How does NoSteamWebHelper kill or disable the CEF/Chromium Embedded Framework? 
 - The executable does the following:
-    - Launches Steam with the following arguments `-cef-single-process -cef-disable-breakpad -cef-disable-gpu-compositing` and appends any user provided ones, this restricts the CEF to a single process.
+    - Launche Steam.
     - Injects the dynamic link library.
 
 The dynamic link library toggles the CEF depending if an is app running or not.

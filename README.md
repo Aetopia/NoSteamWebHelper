@@ -13,7 +13,9 @@ This program was created with the intent of replacing of Steam's command-line pa
     - Injects the dynamic link library.
 
 The dynamic link library toggles the CEF depending if an is app running or not.
+
 - If an app is running then the CEF is disabled.
+
 - If an app is not running then the CEF is enabled.
 
 > [!NOTE]

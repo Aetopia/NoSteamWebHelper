@@ -31,7 +31,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             RegSetKeyValueW(
                 HKEY_CURRENT_USER, L"SOFTWARE\\Valve\\Steam", L"RunningAppID", REG_DWORD,
                 &((DWORD){TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, _.x, _.y,
-                                         0, hWnd, NULL) 
+                                         0, hWnd, NULL)
                               ? TRUE
                               : FALSE}),
                 sizeof(DWORD));

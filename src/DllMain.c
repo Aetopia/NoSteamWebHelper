@@ -97,11 +97,11 @@ DWORD WINAPI ThreadProc(LPVOID lpParameter)
     return EXIT_SUCCESS;
 }
 
-BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+BOOL WINAPI DllMainCRTStartup(HINSTANCE hLibModule, DWORD dwReason, LPVOID lpReserved)
 {
-    if (fdwReason == DLL_PROCESS_ATTACH)
+    if (dwReason == DLL_PROCESS_ATTACH)
     {
-        DisableThreadLibraryCalls(hinstDLL);
+        DisableThreadLibraryCalls(hLibModule);
         CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)FALSE, 0, NULL));
     }
     return TRUE;

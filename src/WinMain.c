@@ -24,8 +24,9 @@ VOID WinMainCRTStartup()
                             GetCommandLineW()),
                    NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &((STARTUPINFOW){}), &_);
 
-    LPVOID lpBaseAddress = VirtualAllocEx(_.hProcess, NULL, dwSize = 42, MEM_COMMIT, PAGE_READWRITE);
+    LPVOID lpBaseAddress = VirtualAllocEx(_.hProcess, NULL, dwSize = 42, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     WriteProcessMemory(_.hProcess, lpBaseAddress, L"NoSteamWebHelper.dll", dwSize, NULL);
+    
     HANDLE hThread =
         CreateRemoteThread(_.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, lpBaseAddress, 0, NULL);
     WaitForSingleObject(hThread, INFINITE);

@@ -3,7 +3,7 @@ cd "%~dp0">nul 2>&1
 rmdir /Q /S "bin">nul 2>&1
 mkdir "bin">nul 2>&1
 
-i686-w64-mingw32-gcc.exe -Os -Wl,--gc-sections -municode -shared -nostdlib -s "DllMain.c" -lKernel32 -lUser32 -lAdvapi32 -lShell32 -o "bin\NoSteamWebHelper.dll"
+i686-w64-mingw32-gcc.exe -Os -Wl,--gc-sections -municode -shared -nostdlib -s "DllMain.c" -lntdll -lKernel32 -lUser32 -lAdvapi32 -lShell32 -o "bin\NoSteamWebHelper.dll"
 
 i686-w64-mingw32-gcc.exe -Os -Wl,--gc-sections -municode -mwindows -nostdlib -s "WinMain.c" -lKernel32 -o "bin\NoSteamWebHelper.exe"
 

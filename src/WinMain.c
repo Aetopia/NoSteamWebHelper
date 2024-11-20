@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <winternl.h>
 
 VOID WinMainCRTStartup()
 {
@@ -16,13 +17,15 @@ VOID WinMainCRTStartup()
             break;
         }
 
+    PRTL_USER_PROCESS_PARAMETERS $ = NtCurrentTeb()->ProcessEnvironmentBlock->ProcessParameters;
+    PWSTR lpCommandLine = $->CommandLine.Buffer + ($->ImagePathName.Length / sizeof(WCHAR)) + 2;
     PROCESS_INFORMATION _ = {};
-    CreateProcessW(NULL,
-                   lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-                                               22 + (sizeof(WCHAR) * lstrlenW(GetCommandLineW()))),
-                                     L"steam.exe "),
-                            GetCommandLineW()),
-                   NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &((STARTUPINFOW){}), &_);
+    CreateProcessW(
+        NULL,
+        lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 36 + (lstrlenW(lpCommandLine) * sizeof(WCHAR))),
+                          L"steam.exe -silent"),
+                 lpCommandLine),
+        NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &((STARTUPINFOW){}), &_);
 
     LPVOID lpBaseAddress = VirtualAllocEx(_.hProcess, NULL, dwSize = 42, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     WriteProcessMemory(_.hProcess, lpBaseAddress, L"NoSteamWebHelper.dll", dwSize, NULL);

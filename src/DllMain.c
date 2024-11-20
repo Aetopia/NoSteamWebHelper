@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <wtsapi32.h>
 #include <winternl.h>
 
 DWORD WINAPI ThreadProc(LPVOID);
@@ -48,22 +49,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
-BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
-{
-    DWORD dwProcessId = {};
-    GetWindowThreadProcessId(hWnd, &dwProcessId);
-
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, dwProcessId);
-    PROCESS_BASIC_INFORMATION _ = {};
-    NtQueryInformationProcess(hProcess, ProcessBasicInformation, &_, sizeof(PROCESS_BASIC_INFORMATION), NULL);
-    CloseHandle(hProcess);
-
-    if (_.InheritedFromUniqueProcessId == GetCurrentProcessId())
-        EndTask(hWnd, FALSE, TRUE);
-
-    return TRUE;
-}
-
 VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild,
                            DWORD dwEventThread, DWORD dwmsEventTime)
 {
@@ -87,7 +72,28 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
         RegGetValueW(hKey, NULL, L"RunningAppID", RRF_RT_REG_DWORD, NULL, (PVOID)&_, &((DWORD){sizeof(DWORD)}));
         (_ ? SuspendThread : ResumeThread)(hThread);
         if (_)
-            EnumWindows(EnumWindowsProc, (LPARAM){});
+        {
+            WTS_PROCESS_INFOW *pProcessInfo = {};
+            DWORD $ = {};
+
+            WTSEnumerateProcessesW(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pProcessInfo, &$);
+            for (DWORD _ = {}; _ < $; _++)
+                if (CompareStringOrdinal(pProcessInfo[_].pProcessName, -1, L"steamwebhelper.exe", -1, TRUE) ==
+                    CSTR_EQUAL)
+                {
+                    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE, FALSE,
+                                                  pProcessInfo[_].ProcessId);
+
+                    PROCESS_BASIC_INFORMATION _ = {};
+                    NtQueryInformationProcess(hProcess, ProcessBasicInformation, &_, sizeof(PROCESS_BASIC_INFORMATION),
+                                              NULL);
+
+                    if (_.InheritedFromUniqueProcessId == GetCurrentProcessId())
+                        TerminateProcess(hProcess, EXIT_SUCCESS);
+
+                    CloseHandle(hProcess);
+                }
+        }
     }
 }
 

@@ -23,7 +23,7 @@ VOID WinMainCRTStartup()
     CreateProcessW(
         NULL,
         lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-                                    (lstrlenW(L"steam.exe -silent") + lstrlenW(lpCommandLine)) * sizeof(WCHAR)),
+                                    (lstrlenW(L"steam.exe -silent") + lstrlenW(lpCommandLine) + 1) * sizeof(WCHAR)),
                           L"steam.exe -silent"),
                  lpCommandLine),
         NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &((STARTUPINFOW){}), &_);

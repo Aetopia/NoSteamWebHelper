@@ -93,6 +93,7 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
 
                     CloseHandle(hProcess);
                 }
+            WTSFreeMemory(pProcessInfo);
         }
     }
 }

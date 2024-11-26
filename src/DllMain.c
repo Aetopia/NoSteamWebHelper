@@ -141,9 +141,9 @@ BOOL WINAPI DllMainCRTStartup(HINSTANCE hLibModule, DWORD dwReason, LPVOID lpRes
             PROCESS_INFORMATION _ = {};
             CreateProcessW(NULL,
                            lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-                                                       sizeof(WCHAR) * (lstrlenW(GetCommandLineW()) + 8)),
+                                                       sizeof(WCHAR) * (lstrlenW(GetCommandLineW()) + 9)),
                                              GetCommandLineW()),
-                                    L"-silent"),
+                                    L" -silent"),
                            NULL, NULL, FALSE, (DWORD){}, NULL, NULL, &((STARTUPINFOW){.cb = sizeof(STARTUPINFOW)}), &_);
             CloseHandle(_.hProcess);
             CloseHandle(_.hThread);

@@ -22,12 +22,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_USER:
         if (lParam == WM_RBUTTONDOWN)
         {
-            POINT _ = {};
             HMENU hMenu = CreatePopupMenu();
-            GetCursorPos(&_);
             AppendMenuW(hMenu, MF_STRING, FALSE, L"On");
             AppendMenuW(hMenu, MF_STRING, TRUE, L"Off");
             SetForegroundWindow(hWnd);
+
+            POINT _ = {};
+            GetCursorPos(&_);
             RegSetKeyValueW(
                 HKEY_CURRENT_USER, L"SOFTWARE\\Valve\\Steam", L"RunningAppID", REG_DWORD,
                 &((DWORD){TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, _.x, _.y,
@@ -35,6 +36,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                               ? TRUE
                               : FALSE}),
                 sizeof(DWORD));
+                
             DestroyMenu(hMenu);
         }
         break;

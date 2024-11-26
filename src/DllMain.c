@@ -2,14 +2,12 @@
 #include <wtsapi32.h>
 #include <winternl.h>
 
-DWORD WINAPI ThreadProc(LPVOID);
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static NOTIFYICONDATAW _ = {.cbSize = sizeof(NOTIFYICONDATAW),
                                 .uCallbackMessage = WM_USER,
                                 .uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP,
-                                .szTip = L"NoSteamWebHelper"};
+                                .szTip = L"Steam WebHelper"};
     static UINT $ = WM_NULL;
 
     switch (uMsg)
@@ -49,6 +47,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
+DWORD WINAPI WndThreadProc(LPVOID lpParameter)
+{
+    HINSTANCE hInstance = GetModuleHandleW(NULL);
+    CreateWindowExW(WS_EX_LEFT | WS_EX_LTRREADING,
+                    (LPCWSTR)(ULONG_PTR)RegisterClassW(
+                        &((WNDCLASSW){.lpszClassName = L" ", .hInstance = hInstance, .lpfnWndProc = (WNDPROC)WndProc})),
+                    NULL, WS_OVERLAPPED, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+
+    MSG _ = {};
+    while (GetMessageW(&_, NULL, (UINT){}, (UINT){}))
+    {
+        TranslateMessage(&_);
+        DispatchMessageW(&_);
+    }
+    return EXIT_SUCCESS;
+}
+
 VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild,
                            DWORD dwEventThread, DWORD dwmsEventTime)
 {
@@ -59,7 +74,7 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
         GetWindowTextLengthW(hwnd) < 1)
         return;
 
-    CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)TRUE, 0, NULL));
+    CloseHandle(CreateThread(NULL, 0, WndThreadProc, (LPVOID)TRUE, 0, NULL));
 
     HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, dwEventThread);
     HKEY hKey = NULL;
@@ -68,8 +83,8 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
 
     while (!RegNotifyChangeKeyValue(hKey, FALSE, REG_NOTIFY_CHANGE_LAST_SET, NULL, FALSE))
     {
-        DWORD _ = 0;
-        RegGetValueW(hKey, NULL, L"RunningAppID", RRF_RT_REG_DWORD, NULL, (PVOID)&_, &((DWORD){sizeof(DWORD)}));
+        BOOL _ = FALSE;
+        RegGetValueW(hKey, NULL, L"RunningAppID", RRF_RT_REG_DWORD, NULL, (PVOID)&_, &((DWORD){sizeof(BOOL)}));
         (_ ? SuspendThread : ResumeThread)(hThread);
         if (_)
         {
@@ -98,26 +113,13 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
     }
 }
 
-DWORD WINAPI ThreadProc(LPVOID lpParameter)
+DWORD WINAPI WinEventThreadProc(LPVOID lpParameter)
 {
+    SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_CREATE, NULL, WinEventProc, GetCurrentProcessId(), (DWORD){},
+                    WINEVENT_OUTOFCONTEXT);
     MSG _ = {};
-
-    if (lpParameter)
-    {
-        HINSTANCE hInstance = GetModuleHandleW(NULL);
-        RegisterClassW(&((WNDCLASSW){.lpszClassName = L" ", .hInstance = hInstance, .lpfnWndProc = (WNDPROC)WndProc}));
-        CreateWindowExW(WS_EX_LEFT | WS_EX_LTRREADING, L" ", NULL, WS_OVERLAPPED, 0, 0, 0, 0, NULL, NULL, hInstance,
-                        NULL);
-    }
-    else
-        SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_CREATE, NULL, WinEventProc, GetCurrentProcessId(), 0,
-                        WINEVENT_OUTOFCONTEXT);
-
-    while (GetMessageW(&_, NULL, 0, 0))
-    {
-        TranslateMessage(&_);
-        DispatchMessageW(&_);
-    }
+    while (GetMessageW(&_, NULL, (UINT){}, (UINT){}))
+        ;
     return EXIT_SUCCESS;
 }
 
@@ -125,8 +127,31 @@ BOOL WINAPI DllMainCRTStartup(HINSTANCE hLibModule, DWORD dwReason, LPVOID lpRes
 {
     if (dwReason == DLL_PROCESS_ATTACH)
     {
+        INT NumArgs = {};
+        LPWSTR *lpStrings = CommandLineToArgvW(GetCommandLineW(), &NumArgs);
+        BOOL $ = FALSE;
+
+        for (INT _ = {}; _ < NumArgs; _++)
+            if (($ = CompareStringOrdinal(L"-silent", -1, lpStrings[_], -1, TRUE) == CSTR_EQUAL))
+                break;
+        LocalFree(lpStrings);
+
+        if (!$)
+        {
+            PROCESS_INFORMATION _ = {};
+            CreateProcessW(NULL,
+                           lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+                                                       sizeof(WCHAR) * (lstrlenW(GetCommandLineW()) + 8)),
+                                             GetCommandLineW()),
+                                    L"-silent"),
+                           NULL, NULL, FALSE, (DWORD){}, NULL, NULL, &((STARTUPINFOW){.cb = sizeof(STARTUPINFOW)}), &_);
+            CloseHandle(_.hProcess);
+            CloseHandle(_.hThread);
+            TerminateProcess(GetCurrentProcess(), EXIT_SUCCESS);
+        }
+
         DisableThreadLibraryCalls(hLibModule);
-        CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)FALSE, 0, NULL));
+        CloseHandle(CreateThread(NULL, 0, WinEventThreadProc, (LPVOID)FALSE, 0, NULL));
     }
     return TRUE;
 }

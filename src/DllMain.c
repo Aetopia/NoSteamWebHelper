@@ -2,7 +2,9 @@
 #include <wtsapi32.h>
 #include <winternl.h>
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static DWORD WINAPI ThreadProc(LPVOID lpParameter);
+
+static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static NOTIFYICONDATAW _ = {.cbSize = sizeof(NOTIFYICONDATAW),
                                 .uCallbackMessage = WM_USER,
@@ -36,7 +38,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                               ? TRUE
                               : FALSE}),
                 sizeof(DWORD));
-                
+
             DestroyMenu(hMenu);
         }
         break;
@@ -49,25 +51,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
-DWORD WINAPI WndThreadProc(LPVOID lpParameter)
-{
-    HINSTANCE hInstance = GetModuleHandleW(NULL);
-    CreateWindowExW(WS_EX_LEFT | WS_EX_LTRREADING,
-                    (LPCWSTR)(ULONG_PTR)RegisterClassW(
-                        &((WNDCLASSW){.lpszClassName = L" ", .hInstance = hInstance, .lpfnWndProc = (WNDPROC)WndProc})),
-                    NULL, WS_OVERLAPPED, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
-
-    MSG _ = {};
-    while (GetMessageW(&_, NULL, (UINT){}, (UINT){}))
-    {
-        TranslateMessage(&_);
-        DispatchMessageW(&_);
-    }
-    return EXIT_SUCCESS;
-}
-
-VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild,
-                           DWORD dwEventThread, DWORD dwmsEventTime)
+static VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild,
+                                  DWORD dwEventThread, DWORD dwmsEventTime)
 {
     WCHAR szClassName[16] = {};
     GetClassNameW(hwnd, szClassName, 16);
@@ -76,7 +61,7 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
         GetWindowTextLengthW(hwnd) < 1)
         return;
 
-    CloseHandle(CreateThread(NULL, 0, WndThreadProc, (LPVOID)TRUE, 0, NULL));
+    CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)FALSE, 0, NULL));
 
     HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, dwEventThread);
     HKEY hKey = NULL;
@@ -115,13 +100,24 @@ VOID CALLBACK WinEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, 
     }
 }
 
-DWORD WINAPI WinEventThreadProc(LPVOID lpParameter)
+static DWORD WINAPI ThreadProc(LPVOID lpParameter)
 {
-    SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_CREATE, NULL, WinEventProc, GetCurrentProcessId(), (DWORD){},
-                    WINEVENT_OUTOFCONTEXT);
+    if (lpParameter)
+        SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_CREATE, NULL, WinEventProc, GetCurrentProcessId(), (DWORD){},
+                        WINEVENT_OUTOFCONTEXT);
+    else
+        CreateWindowExW(
+            WS_EX_LEFT | WS_EX_LTRREADING,
+            (LPCWSTR)(ULONG_PTR)RegisterClassW(&((WNDCLASSW){
+                .lpszClassName = L" ", .hInstance = GetModuleHandleW(NULL), .lpfnWndProc = (WNDPROC)WndProc})),
+            NULL, WS_OVERLAPPED, 0, 0, 0, 0, NULL, NULL, GetModuleHandleW(NULL), NULL);
+
     MSG _ = {};
     while (GetMessageW(&_, NULL, (UINT){}, (UINT){}))
-        ;
+    {
+        TranslateMessage(&_);
+        DispatchMessageW(&_);
+    }
     return EXIT_SUCCESS;
 }
 
@@ -153,7 +149,7 @@ BOOL WINAPI DllMainCRTStartup(HINSTANCE hLibModule, DWORD dwReason, LPVOID lpRes
         }
 
         DisableThreadLibraryCalls(hLibModule);
-        CloseHandle(CreateThread(NULL, 0, WinEventThreadProc, (LPVOID)FALSE, 0, NULL));
+        CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)TRUE, 0, NULL));
     }
     return TRUE;
 }

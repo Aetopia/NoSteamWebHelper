@@ -125,29 +125,6 @@ BOOL WINAPI DllMainCRTStartup(HINSTANCE hLibModule, DWORD dwReason, LPVOID lpRes
 {
     if (dwReason == DLL_PROCESS_ATTACH)
     {
-        INT NumArgs = {};
-        LPWSTR *lpStrings = CommandLineToArgvW(GetCommandLineW(), &NumArgs);
-        BOOL $ = FALSE;
-
-        for (INT _ = {}; _ < NumArgs; _++)
-            if (($ = CompareStringOrdinal(L"-silent", -1, lpStrings[_], -1, TRUE) == CSTR_EQUAL))
-                break;
-        LocalFree(lpStrings);
-
-        if (!$)
-        {
-            PROCESS_INFORMATION _ = {};
-            CreateProcessW(NULL,
-                           lstrcatW(lstrcpyW(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-                                                       sizeof(WCHAR) * (lstrlenW(GetCommandLineW()) + 9)),
-                                             GetCommandLineW()),
-                                    L" -silent"),
-                           NULL, NULL, FALSE, (DWORD){}, NULL, NULL, &((STARTUPINFOW){.cb = sizeof(STARTUPINFOW)}), &_);
-            CloseHandle(_.hProcess);
-            CloseHandle(_.hThread);
-            TerminateProcess(GetCurrentProcess(), EXIT_SUCCESS);
-        }
-
         DisableThreadLibraryCalls(hLibModule);
         CloseHandle(CreateThread(NULL, 0, ThreadProc, (LPVOID)TRUE, 0, NULL));
     }

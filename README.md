@@ -25,7 +25,8 @@ This way, the Steam UI is still accessible to use.
 4. Start up an app and the CEF will be toggled accordingly.
 
 > [!NOTE]
-> You may also manually toggle the CEF via a tray icon.
+> - You may also manually toggle the CEF via a tray icon.
+> - To prevent the CEF from automatically showing when restored, pass `-silent` to Steam.
 
 # Build
 1. Install [MSYS2](https://www.msys2.org/) & [UPX](https://upx.github.io/) for optional compression.
@@ -38,7 +39,7 @@ This way, the Steam UI is still accessible to use.
 3. Install GCC i686 using:
 
     ```bash
-    pacman -S mingw-w64-i686-gcc
+    pacman -S mingw-w64-i686-gcc --noconfirm
     ```
 
 4. Make sure `<MSYS2 Installation Directory>\mingw32\bin` is added to the Windows `PATH` environment variable.

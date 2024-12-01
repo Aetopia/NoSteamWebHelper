@@ -13,7 +13,7 @@ The dynamic link library toggles the CEF depending if an is app running or not.
 
 - If an app is not running then the CEF is enabled.
 
-This way, the Steam UI is still accessible to use.
+This way, Steam is still accessible to use.
     
 # Usage
 1. Download the latest release from [GitHub Releases](https://github.com/Aetopia/NoSteamWebHelper/releases).
